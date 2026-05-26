@@ -43,6 +43,7 @@ def main(input_file_paths, satellite_base_path, tle_base_path, output_base_path,
                 df_sat['orbital_decay'] = - df_sat['aDot_smooth_m_d']
 
             df_tle = pd.read_csv(os.path.join(tle_base_path, f'{key}.csv'))
+            # for TLEs data, compute decay rates using a savgol filter (equivalent to 24h rolling window + gradient)
             df_tle['orbital_decay_tle'] = - savgol_filter(df_tle['a [m] TLE'], window_length=24 * 60 * 2 - 1, polyorder=1, deriv=1) * 2880
             df_tle['time'] = pd.to_datetime(df_tle['time'])
             df_tle = df_tle.set_index('time')
