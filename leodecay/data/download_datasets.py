@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 import click
 import logging
 from pathlib import Path
-from data.cdaweb_downloader import CdaWebLoader
-from data.lasp_downloader import LatisLoader
-from data.tle_downloader import TLELoader
-from data.gfz_downloader import GFZDownloader
+from ..data.cdaweb_downloader import CdaWebLoader
+from ..data.lasp_downloader import LatisLoader
+from ..data.tle_downloader import TLELoader
+from ..data.gfz_downloader import GFZDownloader
 from dotenv import find_dotenv, load_dotenv
 from enum import Enum
 

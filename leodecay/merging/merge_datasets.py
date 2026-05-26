@@ -1,11 +1,6 @@
-# -*- coding: utf-8 -*-
 import click
 import logging
-from pathlib import Path
 import pandas as pd
-from dotenv import find_dotenv, load_dotenv
-import dataframe_image as dfi
-import numpy as np
 import datetime
 import os
 import json

@@ -4,7 +4,7 @@ import glob
 import os
 import logging
 from datetime import datetime, timedelta
-from data.data_downloader import DataDownloader
+from ..data.data_downloader import DataDownloader
 import shutil
 
 class CdaWebLoader(DataDownloader):
