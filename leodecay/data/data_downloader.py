@@ -14,12 +14,6 @@ class DataDownloader(ABC):
         """Fetch data from the source."""
         pass
 
-    @abstractmethod
-    def combine_dataframes(self):
-        """Combine fetched data into output format."""
-        pass
-
-
 class QueryBasedAPIDownloader(DataDownloader):
     """Base class for query-based HTTP APIs that accept parameters in URLs."""
     
