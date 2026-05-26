@@ -707,14 +707,13 @@ class SMOSPreprocessor:
 class GFZPreprocessor:
     def preprocess_gfz(self, input_path: str, output_path: str, cadence='30s', interpolate=False):
         df = pd.read_csv(input_path)
-        df['datetime'] = pd.to_datetime(df['datetime'])
-        df.set_index('datetime', inplace=True)
+        df['time'] = pd.to_datetime(df['time'])
+        df.set_index('time', inplace=True)
         df = df.resample(cadence).asfreq()
         if interpolate:
             df = df.interpolate()
         df.to_csv(output_path)
         logging.info(f"Successfully loaded and processed GFZ data to {output_path}")
-
 
 class DataImputer(BaseEstimator, TransformerMixin):
     def __init__(self, strategy='mean', columns=None, all_cols=False, fill_value=None, excluded_columns=None):
@@ -962,4 +961,3 @@ class PipelinesProcessor:
                          all_cols=True, excluded_columns=specific_imputed_columns)))
 
         return Pipeline(pipe)
-
