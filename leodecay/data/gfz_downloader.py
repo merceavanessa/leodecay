@@ -7,14 +7,14 @@ from ..data.data_downloader import DataDownloader
 
 
 class GFZDownloader(DataDownloader):
-    """Downloads GFZ data including Kp (static files) and Hp30/Hp60 (JSON API)."""
+    """Downloads GFZ data including Hp30/Hp60 (JSON API)."""
     
     def __init__(self, folder_path, dataset=None, start_date=None, end_date=None):
         """Initialize GFZ downloader.
         
         Args:
             folder_path: Output folder for downloaded files
-            dataset: Dataset name ('Kp' or 'Hp' for combined Hp30/Hp60)
+            dataset: Dataset name (for filename)
             start_date: Start date (string or datetime)
             end_date: End date (string or datetime)
         """
@@ -40,37 +40,10 @@ class GFZDownloader(DataDownloader):
             self.dataset = dataset
         
         self.fetch_data()
-        return self.combine_dataframes()
 
     def fetch_data(self):
         """Fetch data from GFZ source."""
-        if self.dataset == "Kp":
-            self._download_kp_files()
-        else:
-            # For Hp30 and Hp60, download and combine them
-            self._download_hp_combined(["Hp30", "Hp60"])
-
-    def combine_dataframes(self):
-        """Return the output file path."""
-        if self.dataset == "Kp":
-            for year in range(self.start_date.year, self.end_date.year + 1):
-                file_name = f"kp_{year}.wdc"
-                file_path = os.path.join(self.folder_path, file_name)
-                if os.path.exists(file_path):
-                    return file_path
-        else:
-            file_name = f"GFZ_{self.start_date.strftime('%Y%m%d')}_{self.end_date.strftime('%Y%m%d')}.csv"
-            return os.path.join(self.folder_path, file_name)
-
-    def _download_kp_files(self):
-        """Download Kp data files using FileDownloader pattern."""
-        self.logger.info("Downloading Kp data files.")
-        base_url = "https://datapub.gfz-potsdam.de/download/10.5880.GFZ.2.3.{YEAR}.001/kp_{YEAR}.wdc"
-        years = range(self.start_date.year, self.end_date.year + 1)
-        for year in years:
-            url = base_url.format(YEAR=year)
-            file_name = f"kp_{year}.wdc"
-            self._download_file(url, file_name)
+        self._download_hp_combined(["Hp30", "Hp60"])
 
     def _download_hp_combined(self, indices):
         """Download Hp30 and Hp60 data using JSONAPIDownloader pattern and combine."""
@@ -87,7 +60,7 @@ class GFZDownloader(DataDownloader):
 
         combined_df = pd.concat(df_list, axis=1)
         output_path = os.path.join(self.folder_path, 
-                                   f"GFZ_{self.start_date.strftime('%Y%m%d')}_{self.end_date.strftime('%Y%m%d')}.csv")
+                                   f"{self.dataset}.csv")
         combined_df.to_csv(output_path)
         self.logger.info(f"Successfully downloaded and saved combined GFZ data to {output_path}")
 
