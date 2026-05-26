@@ -105,10 +105,10 @@ class GFZDownloader(DataDownloader):
                 return None
 
             df = pd.DataFrame({
-                'datetime': pd.to_datetime(data['datetime']),
+                'time': pd.to_datetime(data['datetime']),
                 index: data[index]
             })
-            df.set_index('datetime', inplace=True)
+            df.set_index('time', inplace=True)
             self.logger.info(f"Successfully fetched {index} data")
             return df
 
