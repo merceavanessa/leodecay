@@ -52,8 +52,7 @@ class CdaWebLoader(DataDownloader):
         status, data = cdas.get_data(self.dataset, vars, min_time, max_time)
 
         if status['http']['status_code'] == 200 and len(status['cdas']['error']) == 0:
-            df = data.to_dataframe()
-
+            df = data.to_dataframe().reset_index()
             df['Epoch'] = pd.to_datetime(df['Epoch'])
 
             csv_filename = f"{self.folder_path}/{self.dataset}_intermediate/{self.dataset}_{year}.csv"
