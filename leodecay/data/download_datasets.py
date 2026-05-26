@@ -28,14 +28,14 @@ class DataSource(Enum):
     GFZ = "GFZ"
 
 @click.command()
-@click.option('--folder_path', type=click.STRING)
-@click.option('--conf_path', type=click.STRING)
-@click.option('--data_source', type=EnumType(DataSource))
-@click.option('--dataset', type=click.STRING)
-@click.option('--start_date', type=click.STRING)
-@click.option('--end_date', type=click.STRING)
-@click.option('--username', type=click.STRING, default=None)
-@click.option('--password', type=click.STRING, default=None)
+@click.option('-folder_path', type=click.STRING)
+@click.option('-conf_path', type=click.STRING)
+@click.option('-data_source', type=EnumType(DataSource))
+@click.option('-dataset', type=click.STRING)
+@click.option('-start_date', type=click.STRING)
+@click.option('-end_date', type=click.STRING)
+@click.option('-username', type=click.STRING, default=None)
+@click.option('-password', type=click.STRING, default=None)
 def main(folder_path, conf_path=None, data_source=None, dataset=None, start_date="1995-01-01", end_date="2024-03-03", username=None, password=None):
     """ Runs data processing scripts to turn raw data from (../raw) into
         cleaned data ready to be analyzed (saved in ../processed).
