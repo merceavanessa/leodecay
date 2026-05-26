@@ -1,26 +1,23 @@
 import json
-from pathlib import Path
-
+import re
 import click
 import numpy as np
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.impute import KNNImputer, SimpleImputer
-from imblearn.pipeline import Pipeline
-import re
-from astropy.time import Time
-from scipy.signal import periodogram
 import os
-from scipy.signal import periodogram, find_peaks, find_peaks_cwt
-from statsmodels.tsa.seasonal import seasonal_decompose 
-from statsmodels.tsa.seasonal import STL
 import math
 import multiprocessing as mp
-from concurrent.futures import ProcessPoolExecutor
-from tqdm import tqdm
 import timeit
 import cProfile
 import logging
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.impute import KNNImputer, SimpleImputer
+from imblearn.pipeline import Pipeline
+from scipy.signal import periodogram
+from statsmodels.tsa.seasonal import STL
+from concurrent.futures import ProcessPoolExecutor
+from astropy.time import Time
+from pathlib import Path
+from tqdm import tqdm
 
 class OMNIPreprocessor():
 
@@ -910,12 +907,3 @@ class PipelinesProcessor:
                          all_cols=True)))
 
         return Pipeline(pipe)
-
-
-def parse_config(ctx, param, value):
-    if value is None:
-        return {}
-    try:
-        return json.loads(value)
-    except json.JSONDecodeError:
-        raise click.BadParameter('Invalid JSON format')

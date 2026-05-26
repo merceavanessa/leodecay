@@ -1,5 +1,6 @@
 import click
 import logging
+import pandas as pd
 from pathlib import Path
 from ..data.cdaweb_downloader import CdaWebLoader
 from ..data.lasp_downloader import LatisLoader
@@ -49,8 +50,10 @@ def main(folder_path, conf_path=None, data_source=None, dataset=None, start_date
         loader = TLELoader(folder_path=folder_path, conf_path=conf_path, dataset=dataset, start_date=start_date, end_date=end_date, username=username, password=password)
         logging.info(f"Combined intermediate data saved to {loader.load_data()}")
     elif data_source == DataSource.GFZ:
-        loader = GFZDownloader(output_folder=folder_path)
-        loader.download_hp_combined(dataset=dataset, start_date=start_date, end_date=end_date)
+        start_date_dt = pd.to_datetime(start_date)
+        end_date_dt = pd.to_datetime(end_date)
+        loader = GFZDownloader(folder_path=folder_path, dataset=dataset, start_date=start_date_dt, end_date=end_date_dt)
+        logging.info(f"Combined intermediate data saved to {loader.load_data()}")
     else:
         logging.warning("Please provide the data source")
 
