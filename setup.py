@@ -6,5 +6,5 @@ setup(
     description='Quantifying and modeling the storm-induced orbital decay of low Earth orbit satellites .',
     author='Vanessa Mercea',
     license='MIT',
-    packages=find_packages(include=["leodecay*"])
+    packages=find_packages(exclude=["*.egg-info"])
 )

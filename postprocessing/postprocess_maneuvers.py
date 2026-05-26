@@ -11,8 +11,8 @@ import multiprocessing
 import tqdm
 import numpy as np
 import json
-from leodecay.preprocessing.preprocessing_utils import PODPreprocessor
-from leodecay.utils.logging_utils import setup_logging
+from preprocessing.preprocessing_utils import PODPreprocessor
+from utils.logging_utils import setup_logging
 
 # not relevant for the two-year analysis, where this process is dealth with in the decay derivation
 
