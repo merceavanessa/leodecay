@@ -2,7 +2,7 @@ import json
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
-from src.data.data_downloader import DataDownloader
+from leodecay.data.data_downloader import DataDownloader
 
 
 class TLELoader(DataDownloader):

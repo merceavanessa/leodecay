@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List
-from .lag_config import LagConfig
+from leodecay.configs.lag_config import LagConfig
 
 @dataclass
 class DataConfig:

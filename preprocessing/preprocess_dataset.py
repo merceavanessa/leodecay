@@ -6,7 +6,8 @@ from pathlib import Path
 import pandas as pd
 import pprint
 from dotenv import find_dotenv, load_dotenv
-from src.preprocessing.preprocessing_utils import *
+
+from leodecay.preprocessing.preprocessing_utils import *
 import yaml
 import datetime
 import logging
@@ -14,7 +15,7 @@ import logging.handlers
 import multiprocessing
 import queue
 
-from src.utils.logging_utils import setup_logging
+from leodecay.utils.logging_utils import setup_logging
 
 
 def parse_config(ctx, param, value):
@@ -38,6 +39,14 @@ def main(input_file_path, dataset, pipeline_configuration, output_file_path):
         processor = PODPreprocessor()
         processor.preprocess_pod(input_file_path, output_file_path, pipeline_configuration.get('set_cadence', '30s'))
         logging.info(f"POD data processed successfully from LST files.\n")
+    elif dataset == "SMOS":
+        processor = SMOSPreprocessor()
+        processor.preprocess_smos(input_file_path, output_file_path, pipeline_configuration.get('set_cadence', '30s'))
+        logging.info(f"SMOS data processed successfully. {input_file_path} -> {output_file_path}\n")
+    elif dataset == "GFZ":
+        processor = GFZPreprocessor()
+        processor.preprocess_gfz(input_file_path, output_file_path, pipeline_configuration.get('set_cadence', '30s'))
+        logging.info(f"GFZ data processed successfully. {input_file_path} -> {output_file_path}\n")
     else:
         pipeline = PipelinesProcessor(pipeline_configuration, input_file_path).preprocess()
         df = pd.read_csv(f"{input_file_path}")
@@ -64,4 +73,4 @@ if __name__ == '__main__':
     try:
         main()
     finally:
-        listener.stop()  
+        listener.stop()

@@ -4,7 +4,7 @@ import glob
 import os
 import logging
 from datetime import datetime, timedelta
-from src.data.data_downloader import DataDownloader
+from leodecay.data.data_downloader import DataDownloader
 import shutil
 
 class CdaWebLoader(DataDownloader):

@@ -45,8 +45,7 @@ def main(input_file_paths, satellite_base_path, tle_base_path, output_base_path,
             df_sat = df_sat.set_index('time')
 
             if 'orbital_decay' not in df_sat.columns:
-                df_sat.rename(columns={'aDot_smooth_m_s': 'orbital_decay'}, inplace=True)
-                df_sat['orbital_decay'] = - df_sat['orbital_decay']
+                df_sat['orbital_decay'] = - df_sat['aDot_smooth_m_d']
 
             df_tle = pd.read_csv(os.path.join(tle_base_path, f'{key}.csv'))
             df_tle['orbital_decay_tle'] = - savgol_filter(df_tle['a [m] TLE'], window_length=24 * 60 * 2 - 1, polyorder=1, deriv=1) * 2880

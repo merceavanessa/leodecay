@@ -1,14 +1,12 @@
 import json
+from pathlib import Path
+
 import click
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.impute import KNNImputer, SimpleImputer
 from imblearn.pipeline import Pipeline
-from src.preprocessing.preprocessing_utils import *
-import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.impute import KNNImputer, SimpleImputer
 import re
 from astropy.time import Time
 from scipy.signal import periodogram
@@ -258,7 +256,7 @@ class PODPreprocessor():
             logger.info(f"Finished Computing Orbital Decay for {satellite_name} at time {timeit.default_timer()}.")
             logger.info ("Last date processed: ", df.index[-1])
 
-            df.to_csv(f"{out_path}/{satellite_name}.csv",
+            df.to_parquet(f"{out_path}/{satellite_name}.csv",
                       index=True, index_label='time')
 
     def get_regression_coefficients(self, x, y):
@@ -576,7 +574,7 @@ class TLEPreprocessor():
         for file in os.listdir(tle_path):
             if file.endswith(".csv"):
                 df = self.process_tle_data(os.path.join(tle_path, file), cadence=cadence)
-                df.to_csv(f"{out_path}/{file}", index=True, index_label='time')
+                df.to_parquet(f"{out_path}/{file}", index=True, index_label='time')
 
     def process_tle_data(self, tle_sat_path, cadence='30s'):
         relevant_columns = ['EPOCH', 'SEMIMAJOR_AXIS']
@@ -616,6 +614,73 @@ class TLEPreprocessor():
         df_sat.sort_index(inplace=True)
 
         return df_sat
+
+
+def process_smos_file(file_path):
+    try:
+        column_names = [
+            "date", "time", "SunBT_1AU[K]", "SunFlux_1AU[sfu]", "N_Snapshots", 
+            "SunBT_1AU_STD[K]", "Mean_Sun_Elevation[rad]", "Earth-Sun_Distance_Factor", 
+            "SMOS_Orbit_Number", "SMOS_Orbit_ANX_Start_Date", "SMOS_Orbit_ANX_Start_Time",
+            "Acquisition_Start_Date", "Acquisition_Start_Time",
+            "Acquisition_Stop_Date", "Acquisition_Stop_Time"
+        ]
+        df = pd.read_csv(
+            file_path, skiprows=2, header=None, delim_whitespace=True, names=column_names
+        )
+        if df.empty:
+            return None
+        df['timestamp'] = pd.to_datetime(df['date'] + ' ' + df['time'])
+        df.set_index('timestamp', inplace=True)
+        df_flux = df[['SunFlux_1AU[sfu]']].copy()
+        df_flux.rename(columns={'SunFlux_1AU[sfu]': 'sun_flux_smos'}, inplace=True)
+        return df_flux
+    except Exception as e:
+        logging.error(f"Failed to parse SMOS file {file_path}: {e}")
+        return None
+
+class SMOSPreprocessor:
+    def preprocess_smos(self, input_path: str, output_path: str, cadence='30s', interpolate=False):
+        smos_path = Path(input_path)
+        if not smos_path.exists():
+            logging.warning(f"SMOS data directory not found at: {smos_path}")
+            return
+
+        smos_files = sorted(list(smos_path.glob('**/*.txt')))
+        if not smos_files:
+            logging.warning("No SMOS .txt files found.")
+            return
+
+        logging.info(f"Found {len(smos_files)} SMOS files to process.")
+        
+        with ProcessPoolExecutor() as executor:
+            dataframes = list(executor.map(process_smos_file, smos_files))
+        
+        df_final = pd.concat([df for df in dataframes if df is not None])
+
+        if df_final.empty:
+            logging.warning("SMOS data is empty after processing all files.")
+            return
+
+        df_final.sort_index(inplace=True)
+        df_final = df_final.resample(cadence).mean()
+        if interpolate:
+            df_final = df_final.interpolate()
+            
+        df_final.to_parquet(output_path)
+        logging.info(f"Successfully loaded and processed SMOS data to {output_path}")
+
+
+class GFZPreprocessor:
+    def preprocess_gfz(self, input_path: str, output_path: str, cadence='30s', interpolate=False):
+        df = pd.read_csv(input_path)
+        df['datetime'] = pd.to_datetime(df['datetime'])
+        df.set_index('datetime', inplace=True)
+        df = df.resample(cadence).asfreq()
+        if interpolate:
+            df = df.interpolate()
+        df.to_parquet(output_path)
+        logging.info(f"Successfully loaded and processed GFZ data to {output_path}")
 
 
 class DataImputer(BaseEstimator, TransformerMixin):

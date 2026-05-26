@@ -4,7 +4,6 @@ import logging
 from pathlib import Path
 import pandas as pd
 from dotenv import find_dotenv, load_dotenv
-from src.preprocessing.preprocessing_utils import PODPreprocessor
 import datetime
 import logging
 import logging.handlers
@@ -12,8 +11,8 @@ import multiprocessing
 import tqdm
 import numpy as np
 import json
-
-from src.utils.logging_utils import setup_logging
+from leodecay.preprocessing.preprocessing_utils import PODPreprocessor
+from leodecay.utils.logging_utils import setup_logging
 
 # not relevant for the two-year analysis, where this process is dealth with in the decay derivation
 

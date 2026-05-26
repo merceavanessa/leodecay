@@ -2,9 +2,11 @@
 import click
 import logging
 from pathlib import Path
-from src.data.cdaweb_downloader import CdaWebLoader
-from src.data.lasp_downloader import LatisLoader
-from src.data.tle_downloader import TLELoader
+import pandas as pd
+from leodecay.data.cdaweb_downloader import CdaWebLoader
+from leodecay.data.lasp_downloader import LatisLoader
+from leodecay.data.tle_downloader import TLELoader
+from leodecay.data.gfz_downloader import GFZDownloader
 from dotenv import find_dotenv, load_dotenv
 from enum import Enum
 
@@ -24,7 +26,7 @@ class DataSource(Enum):
     OMNI = "OMNI"
     LATIS = "LATIS"
     TLE = "TLE"
-
+    GFZ = "GFZ"
 
 @click.command()
 @click.option('--folder_path', type=click.STRING)
@@ -42,13 +44,15 @@ def main(folder_path, conf_path=None, data_source=None, dataset=None, start_date
     if data_source == DataSource.OMNI:
         loader = CdaWebLoader(folder_path=folder_path, dataset=dataset, start_date=start_date, end_date=end_date)
         logging.info(f"Combined intermediate data saved to {loader.load_data()}")
-
     elif data_source == DataSource.LATIS:
         loader = LatisLoader(folder_path=folder_path, dataset=dataset, start_date=start_date, end_date=end_date)
         logging.info(f"Combined intermediate data saved to {loader.load_data()}")
     elif data_source == DataSource.TLE:
         loader = TLELoader(folder_path=folder_path, conf_path=conf_path, dataset=dataset, start_date=start_date, end_date=end_date, username=username, password=password)
         logging.info(f"Combined intermediate data saved to {loader.load_data()}")
+    elif data_source == DataSource.GFZ:
+        loader = GFZDownloader(output_folder=folder_path)
+        loader.download_hp_combined(dataset=dataset, start_date=start_date, end_date=end_date)
     else:
         logging.warning("Please provide the data source")
 

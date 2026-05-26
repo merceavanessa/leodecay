@@ -12,7 +12,7 @@ import shap
 import re
 from matplotlib.lines import Line2D
 
-from src.utils.notation_utils import feature_to_physics_notation
+from leodecay.utils.notation_utils import feature_to_physics_notation
 
 def lighten_color(color, amount=0.5):
     try:

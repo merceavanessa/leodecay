@@ -1,6 +1,6 @@
 from urllib.error import HTTPError
 import pandas as pd
-from src.data.data_downloader import DataDownloader
+from leodecay.data.data_downloader import DataDownloader
 from datetime import datetime, timedelta
 
 class LatisLoader(DataDownloader):
